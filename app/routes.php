@@ -23,3 +23,10 @@ Route::get('/api/users/{id}',	'UserController@getUser');
 //Armory controller
 Route::get('/api/armory/users', 				'ArmoryController@getGuildMembers');
 Route::get('/api/armory/users/{server}/{id}', 	'ArmoryController@getCharacter');
+
+//Forum controllers
+Route::post('/api/forum/categories',		'CategoryController@create');
+Route::get('/api/forum/categories',			'CategoryController@getCategories');
+Route::get('/api/forum/categories/{id}',	'CategoryController@getCategory');
+Route::post('/api/forum/categories/update',	'CategoryController@update');
+Route::delete('/api/forum/categories/{id}',	'CategoryController@delete');

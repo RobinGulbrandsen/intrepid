@@ -12,7 +12,7 @@ class UserController extends BaseController {
 		$password = Input::get("password");
 
 		if(is_null($username) || is_null($password)) {
-			return "Missing username or password";
+			App::abort(400, "Missing username or password");
 		}
 
 		if(Auth::attempt(array('username' => $username, 'password' => $password))) {

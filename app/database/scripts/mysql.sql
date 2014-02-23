@@ -37,6 +37,7 @@ CREATE TABLE categories (
 	id			int(8)			PRIMARY KEY AUTO_INCREMENT,
 	name		varchar(255)	NOT NULL UNIQUE,
 	description	varchar(255)	NOT NULL,
+	required_guild_rank int(8),
 	created_at	date,
 	updated_at	date
 );
@@ -48,6 +49,7 @@ CREATE TABLE topics (
 	sticky		boolean			DEFAULT 0,
 	category_id	int(8)			NOT NULL,
 	user_id		int(8)			NOT NULL,
+	required_guild_rank int(8),
 	created_at	date,
 	updated_at	date,
 	FOREIGN KEY (category_id) REFERENCES categories (id)
@@ -60,6 +62,7 @@ CREATE TABLE posts (
 	content		text		NOT NULL,
 	topic_id	int(8)		NOT NULL,
 	user_id		int(8) 		NOT NULL,
+	required_guild_rank int(8),
 	created_at	date,
 	updated_at	date,
 	FOREIGN KEY (topic_id) REFERENCES topics (id)
