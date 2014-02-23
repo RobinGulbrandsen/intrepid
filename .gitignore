@@ -9,3 +9,4 @@ Thumbs.db
 /app/config/app.php
 /app/config/database.php
 /app/controllers/armory/SafePDO.class.php
+/public
