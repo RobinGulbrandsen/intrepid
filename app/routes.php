@@ -25,6 +25,12 @@ Route::get('/api/users/{id}',	'UserController@getUser');
 Route::get('/api/armory/users', 				'ArmoryController@getGuildMembers');
 Route::get('/api/armory/users/{server}/{id}', 	'ArmoryController@getCharacter');
 
+//Articles controller (news)
+Route::post('api/articles', 		'ArticlesController@create');
+Route::get('api/articles', 			'ArticlesController@get');
+Route::post('api/articles/update', 	'ArticlesController@update');
+Route::delete('api/articles/{id}', 	'ArticlesController@delete');
+
 //Forum controllers
 Route::post('/api/forum/categories',		'CategoryController@create');
 Route::get('/api/forum/categories',			'CategoryController@getCategories');

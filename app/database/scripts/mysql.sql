@@ -69,3 +69,13 @@ CREATE TABLE posts (
 		ON DELETE CASCADE,
 	FOREIGN KEY (user_id)	REFERENCES users (id)
 );
+
+CREATE TABLE articles (
+	id 			int(8)			PRIMARY KEY AUTO_INCREMENT,
+	title		varchar(255) 	NOT NULL,
+	content 	text 			NOT NULL,
+	user_id 	int(8)  		NOT NULL,
+	created_at 	date,
+	updated_at 	date,
+	FOREIGN KEY (user_id)	REFERENCES users (id)
+);
