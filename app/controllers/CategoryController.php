@@ -64,13 +64,13 @@ class CategoryController extends BaseController {
 			$categoryDTO->description = $category->description;
 			$categoryDTO->guild_rank_required = $category->guild_rank_required;
 
-			$topic = Topic::where('user_id', '=', $category->id)->orderBy('created_at', 'DESC')->get()->first();
+			$topic = Topic::where('category_id', '=', $category->id)->orderBy('created_at', 'DESC')->get()->first();
 			if(!is_null($topic)) {
-				$topicDTO = new LastTopicDTO();
+				$topicDTO = new TopicDTO();
 				$topicDTO->id 			= $topic->id;
 				$topicDTO->name 		= $topic->name;
 				$topicDTO->created_at 	= $topic->created_at;
-				$categoryDTO->lastTopic = $topicDTO;	
+				$categoryDTO->topic = $topicDTO;	
 			}
 			
 			array_push($returnArray, $categoryDTO);
@@ -78,17 +78,40 @@ class CategoryController extends BaseController {
 		return $returnArray;
 	}
 
+	//returns all the topics for the current category
 	public function getCategory($id) {
 		$category = Category::find($id);
 		if($category->guild_rank_required == null) {
-			return $category;
+			return $this->getCategorysTopics($category);
 		} else {
 			if(Auth::check() && Session::get('guildRank') <= $category->guild_rank_required) {
-				return $category;
+				return $this->getCategorysTopics($category);
 			} else {
 				App::abort(401, 'Unauthorized action');
 			}
 		}
+	}
+
+	public function getCategorysTopics($category) {
+		$categoryDTO = new CategoryDTO();
+		$categoryDTO->id = $category->id;
+		$categoryDTO->name = $category->name;
+		$categoryDTO->description = $category->description;
+		$categoryDTO->guild_rank_required = $category->guild_rank_required;
+
+		$topics = Topic::where('category_id', '=', $category->id)->orderBy('updated_at', 'DESC')->get();
+		
+		$topicArray = array();
+		foreach ($topics as $topic) {
+			$topicDTO = new TopicDTO();
+			$topicDTO->id = $topic->id;
+			$topicDTO->name = $topic->name;
+			$topicDTO->updated_at = $topic->updated_at;
+			array_push($topicArray, $topicDTO);
+		}
+		$categoryDTO->topic = $topicArray;
+
+		return json_encode($categoryDTO);
 	}
 
 	//Update
@@ -122,11 +145,12 @@ class CategoryDTO {
 	public $name;
 	public $description;
 	public $guild_rank_required;
-	public $lastTopic;
+	public $topic;
 }
 
-class LastTopicDTO {
+class TopicDTO {
 	public $id;
 	public $name;
 	public $created_at;
+	public $updated_at;
 }
