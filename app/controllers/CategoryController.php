@@ -2,8 +2,19 @@
 
 class CategoryController extends BaseController {
 
+	private function authenticate() {
+		if(Auth::check() && Session::get('guildRank') <= 3) {
+			return true;
+		} else {
+			App::abort(401, 'Unauthorized action');
+		}
+	}
+
 	//Create
 	public function create() {
+		$this->authenticate();
+
+		//validate user
 		$name 				= Input::get("name");
 		$description 		= Input::get("description");
 		$guild_rank_required = Input::get("guild_rank_required");
@@ -67,11 +78,22 @@ class CategoryController extends BaseController {
 	}
 
 	public function getCategory($id) {
-		return Category::find($id);
+		$category = Category::find($id);
+		if($category->guild_rank_required == null) {
+			return $category;
+		} else {
+			if(Auth::check() && Session::get('guildRank') <= $category->guild_rank_required) {
+				return $category;
+			} else {
+				App::abort(401, 'Unauthorized action');
+			}
+		}
 	}
 
 	//Update
 	public function update() {
+		$this->authenticate();
+
 		$id 				= Input::get("id");
 		$name 				= Input::get("name");
 		$description 		= Input::get("description");
@@ -87,6 +109,8 @@ class CategoryController extends BaseController {
 
 	//Delete
 	public function delete($id) {
+		$this->authenticate();
+
 		$success = Category::find($id)->delete();
 		return json_encode($success);
 	}
