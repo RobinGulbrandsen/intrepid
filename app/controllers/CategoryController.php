@@ -22,9 +22,30 @@ class CategoryController extends BaseController {
 
 	//Read
 	public function getCategories() {
-		$returnArray = array();
+		$categories = null;
+		
+		//Get current user and guild rank to authenticate user
+		if(Auth::check()) {
+			//gets current users guild rank
+			$currentGuildRank = Session::get('guildRank');
+			
+			if($currentGuildRank == null) {
+				//user is not in the guild
+				$categories = Category::where('guild_rank_required', '=', null)->get();
+			} else {
+				//user is in the guild - gets topics with access
+				$categories = Category::where('guild_rank_required', '=', null)
+									  ->where('guild_rank_required', '>=', $currentGuildRank, 'OR')
+									  ->get();
+			}
+		} else {
+			//user is not logged in. Gets general forum
+			$categories = Category::where('guild_rank_required', '=', null)->get();
+		}
 
-		foreach(Category::all() as $category) {
+		//builds return array based on the output from database
+		$returnArray = array();
+		foreach($categories as $category) {
 			$categoryDTO = new CategoryDTO();
 			$categoryDTO->id = $category->id;
 			$categoryDTO->name = $category->name;

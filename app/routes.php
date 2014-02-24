@@ -17,6 +17,7 @@ Route::get('/', 'PageController@getIndex');
 //Users controller
 Route::post('/api/login',		'UserController@postLogin');
 Route::post('/api/register',	'UserController@postRegister');
+Route::post('/api/logout',		'UserController@postLogout');
 Route::get('/api/users', 		'UserController@getUsers');
 Route::get('/api/users/{id}',	'UserController@getUser');
 

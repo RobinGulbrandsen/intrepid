@@ -15,7 +15,7 @@ class UserController extends BaseController {
 			App::abort(400, "Missing username or password");
 		}
 
-		if(Auth::attempt(array('username' => $username, 'password' => $password))) {
+		if(Auth::attempt(array('username' => $username, 'password' => $password), true)) {
 			$user = User::where('username', '=', $username)->first();
 
 			$armory = new ArmoryController();
@@ -36,6 +36,8 @@ class UserController extends BaseController {
 	    			}
 	    		}
 			}
+
+			Session::put('guildRank', $guildRank);
 			
 			return array(
 					'username' 	=> $username,
@@ -79,6 +81,10 @@ class UserController extends BaseController {
 			}
 			
 		}
+	}
+
+	public function postLogout() {
+		Auth::logout();
 	}
 
 	public function getUsers() {
