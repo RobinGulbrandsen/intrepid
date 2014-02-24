@@ -47,6 +47,7 @@ class CategoryController extends BaseController {
 				//user is in the guild - gets topics with access
 				$categories = Category::where('guild_rank_required', '=', null)
 									  ->where('guild_rank_required', '>=', $currentGuildRank, 'OR')
+									  ->orderBy('guild_rank_required', 'ASC')
 									  ->get();
 			}
 		} else {
