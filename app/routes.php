@@ -18,8 +18,6 @@ Route::get('/', 'PageController@getIndex');
 Route::post('/api/login',		'UserController@postLogin');
 Route::post('/api/register',	'UserController@postRegister');
 Route::post('/api/logout',		'UserController@postLogout');
-Route::get('/api/users', 		'UserController@getUsers');
-Route::get('/api/users/{id}',	'UserController@getUser');
 
 //Armory controller
 Route::get('/api/armory/users', 				'ArmoryController@getGuildMembers');
@@ -31,9 +29,29 @@ Route::get('api/articles', 			'ArticlesController@get');
 Route::post('api/articles/update', 	'ArticlesController@update');
 Route::delete('api/articles/{id}', 	'ArticlesController@delete');
 
-//Forum controllers
-Route::post('/api/forum/categories',		'CategoryController@create');
-Route::get('/api/forum/categories',			'CategoryController@getCategories');
-Route::get('/api/forum/categories/{id}',	'CategoryController@getCategory');
-Route::post('/api/forum/categories/update',	'CategoryController@update');
-Route::delete('/api/forum/categories/{id}',	'CategoryController@delete');
+/*
+|--------------------------------------------------------------------------
+| Forum Routes
+|--------------------------------------------------------------------------
+|
+| All routes used to present and use the forum
+|
+*/
+//Front page - with CATEGORY
+Route::get('/api/forum',				'CategoryController@getCategories');
+Route::post('/api/forum',				'CategoryController@create');
+Route::post('/api/forum/update',		'CategoryController@update');
+Route::delete('/api/forum/{category}',	'CategoryController@delete');
+
+//TOPIC in a category
+Route::get('/api/forum/{category}', 			'TopicController@getTopics');
+Route::post('/api/forum/{category}', 			'TopicController@create');
+Route::post('/api/forum/{category}/update', 	'TopicController@update');
+Route::delete('/api/forum/{category}/{topic}', 	'TopicController@delete');
+Route::get('api/forum/{category}/title', 		'TopicController@getTopicTitle');
+
+//POST in topic
+Route::get('/api/forum/{category}/{topic}', 			'PostController@getPosts');
+Route::post('/api/forum/{category}/{topic}', 			'PostController@create');
+Route::post('/api/forum/{category}/{topic}/update', 	'PostController@update');
+Route::delete('/api/forum/{category}/{topic}/{postid}', 'PostController@delete');

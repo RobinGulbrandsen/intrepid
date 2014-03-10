@@ -31,7 +31,6 @@ class ArmoryController extends BaseController {
 			$characterDAO->level = 	$member['character']['level'];
 			$characterDAO->thumbnail = 'http://' . $this->region . '.battle.net/static-render/' . $this->region . '/' . $member['character']['thumbnail'];
 			$characterDAO->guildRank = $member['rank'];
-
 			array_push($memberArray, $characterDAO);
 	    }
 

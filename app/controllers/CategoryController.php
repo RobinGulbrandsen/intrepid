@@ -14,17 +14,16 @@ class CategoryController extends BaseController {
 	public function create() {
 		$this->authenticate();
 
-		//validate user
-		$name 				= Input::get("name");
+		$title 				= Input::get("title");
 		$description 		= Input::get("description");
 		$guild_rank_required = Input::get("guild_rank_required");
 
-		if(is_null($name) || is_null($description)) {
-			App::abort(400, "Fill in name and description");
+		if(is_null($title) || is_null($description)) {
+			App::abort(400, "Fill in title and description");
 		}
 
 		$newCategory = new Category();
-		$newCategory->name 				= $name;
+		$newCategory->title 				= $title;
 		$newCategory->description 		= $description;
 		$newCategory->guild_rank_required = $guild_rank_required;
 		$success = $newCategory->save();
@@ -33,85 +32,22 @@ class CategoryController extends BaseController {
 
 	//Read
 	public function getCategories() {
-		$categories = null;
-		
-		//Get current user and guild rank to authenticate user
-		if(Auth::check()) {
-			//gets current users guild rank
-			$currentGuildRank = Session::get('guildRank');
-			
-			if($currentGuildRank == null) {
-				//user is not in the guild
-				$categories = Category::where('guild_rank_required', '=', null)->get();
-			} else {
-				//user is in the guild - gets topics with access
-				$categories = Category::where('guild_rank_required', '=', null)
-									  ->where('guild_rank_required', '>=', $currentGuildRank, 'OR')
-									  ->orderBy('guild_rank_required', 'ASC')
-									  ->get();
-			}
+		$currentGuildRank = Session::get('guildRank');
+
+		//Returns public forums
+		if($currentGuildRank == null) {
+			return Category::where('guild_rank_required', '=', null)
+							->orderBy('group_id')
+							->orderBy('title')
+							->get();	
 		} else {
-			//user is not logged in. Gets general forum
-			$categories = Category::where('guild_rank_required', '=', null)->get();
+			//Returns restircted forums
+			return Category::where('guild_rank_required', '=', null)
+							->where('guild_rank_required', '>=', $currentGuildRank, 'OR')
+							->orderBy('group_id')
+							->orderBy('title')
+							->get(); 						
 		}
-
-		//builds return array based on the output from database
-		$returnArray = array();
-		foreach($categories as $category) {
-			$categoryDTO = new CategoryDTO();
-			$categoryDTO->id = $category->id;
-			$categoryDTO->name = $category->name;
-			$categoryDTO->description = $category->description;
-			$categoryDTO->guild_rank_required = $category->guild_rank_required;
-
-			$topic = Topic::where('category_id', '=', $category->id)->orderBy('created_at', 'DESC')->get()->first();
-			if(!is_null($topic)) {
-				$topicDTO = new TopicDTO();
-				$topicDTO->id 			= $topic->id;
-				$topicDTO->name 		= $topic->name;
-				$topicDTO->created_at 	= $topic->created_at;
-				$categoryDTO->topic = $topicDTO;	
-			}
-			
-			array_push($returnArray, $categoryDTO);
-		}
-		return $returnArray;
-	}
-
-	//returns all the topics for the current category
-	public function getCategory($id) {
-		$category = Category::find($id);
-		if($category->guild_rank_required == null) {
-			return $this->getCategorysTopics($category);
-		} else {
-			if(Auth::check() && Session::get('guildRank') <= $category->guild_rank_required) {
-				return $this->getCategorysTopics($category);
-			} else {
-				App::abort(401, 'Unauthorized action');
-			}
-		}
-	}
-
-	public function getCategorysTopics($category) {
-		$categoryDTO = new CategoryDTO();
-		$categoryDTO->id = $category->id;
-		$categoryDTO->name = $category->name;
-		$categoryDTO->description = $category->description;
-		$categoryDTO->guild_rank_required = $category->guild_rank_required;
-
-		$topics = Topic::where('category_id', '=', $category->id)->orderBy('updated_at', 'DESC')->get();
-		
-		$topicArray = array();
-		foreach ($topics as $topic) {
-			$topicDTO = new TopicDTO();
-			$topicDTO->id = $topic->id;
-			$topicDTO->name = $topic->name;
-			$topicDTO->updated_at = $topic->updated_at;
-			array_push($topicArray, $topicDTO);
-		}
-		$categoryDTO->topic = $topicArray;
-
-		return json_encode($categoryDTO);
 	}
 
 	//Update
@@ -119,12 +55,12 @@ class CategoryController extends BaseController {
 		$this->authenticate();
 
 		$id 				= Input::get("id");
-		$name 				= Input::get("name");
+		$title 				= Input::get("title");
 		$description 		= Input::get("description");
 		$guild_rank_required = Input::get("guild_rank_required");
 
 		$category = Category::find($id);
-		$category->name 				= $name;
+		$category->title 				= $title;
 		$category->description 			= $description;
 		$category->guild_rank_required 	= $guild_rank_required;
 		$success = $category->update();
@@ -138,19 +74,4 @@ class CategoryController extends BaseController {
 		$success = Category::find($id)->delete();
 		return json_encode($success);
 	}
-}
-
-class CategoryDTO {
-	public $id;
-	public $name;
-	public $description;
-	public $guild_rank_required;
-	public $topic;
-}
-
-class TopicDTO {
-	public $id;
-	public $name;
-	public $created_at;
-	public $updated_at;
 }

@@ -40,6 +40,7 @@ class UserController extends BaseController {
 			Session::put('guildRank', $guildRank);
 			
 			return array(
+					'id' 		=> $user->id,
 					'username' 	=> $username,
 					'email'		=> $user->email,
 					'server'	=> $character['realm'],//$character['realm'],
@@ -85,17 +86,6 @@ class UserController extends BaseController {
 
 	public function postLogout() {
 		Auth::logout();
-	}
-
-	public function getUsers() {
-		if(Auth::check()) {
-			return User::all();	
-		} else {
-			return "Not logged in!";
-		}
-	}
-
-	public function getUser($id) {
-		return User::find($id);
+		Session::put('guildRank', null);
 	}
 }

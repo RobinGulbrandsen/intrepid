@@ -22,6 +22,7 @@ CREATE TABLE users (
 	password 		varchar(60) 	NOT NULL,
 	email 			varchar(100) 	NOT NULL UNIQUE,
 	server			varchar(50) 	NOT NULL,
+	thumbnail		varchar(150) 	NOT NULL,
 	guild 			varchar(20),
 	guild_rank 		int(2),
 	about			varchar(255),
@@ -33,25 +34,29 @@ CREATE TABLE users (
 #############
 # 	FORUM	#
 #############
+# group_id determins wich group (officer, member, public) the category belongs to
 CREATE TABLE categories (
 	id			int(8)			PRIMARY KEY AUTO_INCREMENT,
-	name		varchar(255)	NOT NULL UNIQUE,
+	title		varchar(255)	NOT NULL UNIQUE,
 	description	varchar(255)	NOT NULL,
-	required_guild_rank int(8),
-	created_at	date,
-	updated_at	date
+	group_id	int(8)			NOT NULL,
+	guild_rank_required int(8),
+	created_at	datetime,
+	updated_at	datetime
 );
 
 CREATE TABLE topics (
 	id			int(8)			PRIMARY KEY AUTO_INCREMENT,
-	name		varchar(255)	NOT NULL UNIQUE,
+	title		varchar(255)	NOT NULL,
 	content		text			NOT NULL,
 	sticky		boolean			DEFAULT 0,
 	category_id	int(8)			NOT NULL,
 	user_id		int(8)			NOT NULL,
-	required_guild_rank int(8),
-	created_at	date,
-	updated_at	date,
+	guild_rank_required int(8),
+	last_post_name varchar(50),
+	last_post_time datetime,
+	created_at	datetime,
+	updated_at	datetime,
 	FOREIGN KEY (category_id) REFERENCES categories (id)
 		ON DELETE CASCADE,
 	FOREIGN KEY (user_id)	REFERENCES users (id)
@@ -62,14 +67,18 @@ CREATE TABLE posts (
 	content		text		NOT NULL,
 	topic_id	int(8)		NOT NULL,
 	user_id		int(8) 		NOT NULL,
-	required_guild_rank int(8),
-	created_at	date,
-	updated_at	date,
+	guild_rank_required int(8),
+	created_at	datetime,
+	updated_at	datetime,
 	FOREIGN KEY (topic_id) REFERENCES topics (id)
 		ON DELETE CASCADE,
 	FOREIGN KEY (user_id)	REFERENCES users (id)
 );
 
+
+#####################
+# Front page - news #
+#####################
 CREATE TABLE articles (
 	id 			int(8)			PRIMARY KEY AUTO_INCREMENT,
 	title		varchar(255) 	NOT NULL,
