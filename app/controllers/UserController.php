@@ -38,6 +38,10 @@ class UserController extends BaseController {
 			}
 
 			Session::put('guildRank', $guildRank);
+
+			//Updates thumbnail
+			$user->thumbnail = 'http://' . $this->region . '.battle.net/static-render/' . $this->region . '/' . $character['thumbnail'];
+			$user->update();
 			
 			return array(
 					'id' 		=> $user->id,
