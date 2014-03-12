@@ -33,9 +33,8 @@ class CategoryController extends BaseController {
 	//Read
 	public function getCategories() {
 		$currentGuildRank = Session::get('guildRank');
-
 		//Returns public forums
-		if($currentGuildRank == null) {
+		if($currentGuildRank === null) {
 			return Category::where('guild_rank_required', '=', null)
 							->orderBy('group_id')
 							->orderBy('title')

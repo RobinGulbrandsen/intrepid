@@ -6,7 +6,7 @@ class TopicController extends BaseController {
 	private function auth($guildRank) {
 		if($guildRank != null) {
 			$sessionGuildRank = Session::get('guildRank');
-			if($sessionGuildRank == null) {
+			if($sessionGuildRank === null) {
 				App::abort(401, "Content requires loged in user");
 			}
 			if($sessionGuildRank > $guildRank) {
