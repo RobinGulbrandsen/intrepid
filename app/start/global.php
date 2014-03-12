@@ -49,6 +49,9 @@ Log::useFiles(storage_path().'/logs/laravel.log');
 App::error(function(Exception $exception, $code) {
 	if ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
         Log::error('NotFoundHttpException Route: ' . Request::url() );
+    } 
+    else if($code == 400 || $code == 401 || $code == 403) {
+    	return Response::make($exception->getMessage(), $code);
     } else {
     	Log::error($exception);	
     }

@@ -24,8 +24,8 @@ class CategoryController extends BaseController {
 
 		$newCategory = new Category();
 		$newCategory->title 				= $title;
-		$newCategory->description 		= $description;
-		$newCategory->guild_rank_required = $guild_rank_required;
+		$newCategory->description 			= $description;
+		$newCategory->guild_rank_required 	= $guild_rank_required;
 		$success = $newCategory->save();
 		return json_encode($success);
 	}
@@ -41,12 +41,18 @@ class CategoryController extends BaseController {
 							->orderBy('title')
 							->get();	
 		} else {
-			//Returns restircted forums
-			return Category::where('guild_rank_required', '=', null)
-							->where('guild_rank_required', '>=', $currentGuildRank, 'OR')
+			//If current guild rank makes him an officer, return all
+			if($currentGuildRank <= 3) {
+				return Category::orderBy('group_id')
+							->orderBy('title')
+							->get();
+			} else {
+				return Category::where('guild_rank_required', '=', null)
+							->where('guild_rank_required', '>', 3, 'OR')
 							->orderBy('group_id')
 							->orderBy('title')
-							->get(); 						
+							->get(); 	
+			}				
 		}
 	}
 
