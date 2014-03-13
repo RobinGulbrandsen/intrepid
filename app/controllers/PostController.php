@@ -5,7 +5,7 @@ class PostController extends BaseController {
 	//Authenticate
 	private function auth($topicId) {
 		$topic = Topic::find($topicId);
-		if($topic == null) {
+		if($topic === null) {
 			App::abort(404, "Could not find spesified topic");
 		}
 
@@ -13,7 +13,7 @@ class PostController extends BaseController {
 		$sessionGuildRank = Session::get('guildRank');
 
 		if($guildRankRequired != null) {
-			if($sessionGuildRank > $guildRankRequired || $sessionGuildRank == null) {
+			if($sessionGuildRank > $guildRankRequired || $sessionGuildRank === null) {
 				App::abort(403, "You do not have permission to view this content");
 			}
 		}
@@ -26,17 +26,17 @@ class PostController extends BaseController {
 
 		//Validate inputform
 		$content = Input::get("content");
-		if($content == null) {
+		if($content === null) {
 			App::abort(400, "Content must be filled");
 		}
 
 		$topic = Topic::find($topicId);
-		if($topic == null) {
+		if($topic === null) {
 			App::abort(400, "cant find topic");
 		}
 
 		$category = Category::find($categoryId);
-		if($category == null) {
+		if($category === null) {
 			App::abort(400, "cant find category");
 		}
 
@@ -80,12 +80,12 @@ class PostController extends BaseController {
 		}
 
 		$id = Input::get("id");
-		if($id == null) {
+		if($id === null) {
 			App::abort(400, "Must edit a specific post");
 		}
 
 		$post = Post::find($id);
-		if($post == null) {
+		if($post === null) {
 			App::abort(400, "Post not found");
 		}
 

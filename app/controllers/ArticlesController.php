@@ -4,7 +4,7 @@ class ArticlesController extends BaseController {
 
 	//Authenticate
 	private function authenticate() {
-		if(Auth::check() && Session::get('guildRank') <= 3) {
+		if(Auth::check() && Session::get('guildRank') <= 3 && Session::get('guildRank') !== null) {
 			return true;
 		} else {
 			App::abort(401, 'Unauthorized action');

@@ -19,7 +19,7 @@ class TopicController extends BaseController {
 	public function create($categoryId) {
 		//Validate category
 		$category = Category::find($categoryId);
-		if($category == null) {
+		if($category === null) {
 			App::abort(400, "A topic must be created under a valid category");
 		}
 
@@ -30,7 +30,7 @@ class TopicController extends BaseController {
 
 		$currentUser = Auth::user();
 		$currentUser->guild_rank = Session::get("guildRank");
-		if($category->guild_rank_required != null && $currentUser->guild_rank > $category->guild_rank_required) {
+		if($category->guild_rank_required !== null && $currentUser->guild_rank > $category->guild_rank_required) {
 			App::abort(401, "You do not have permission to create topic under this category");
 		}
 
@@ -39,7 +39,7 @@ class TopicController extends BaseController {
 		$title = 	Input::get("title");
 		$content = 	Input::get("content");
 
-		if($title == null || $content == null) {
+		if($title === null || $content === null) {
 			App::abort(400, "Both title and content must have data");
 		}
 
@@ -57,7 +57,7 @@ class TopicController extends BaseController {
 		//If user is officer, check for sticky
 		if($currentUser->guild_rank <= 3) {
 			$sticky = Input::get("sticky");
-			if($sticky != null) {
+			if($sticky !== null) {
 				$topic->sticky = $sticky;
 			}
 		}
@@ -76,7 +76,7 @@ class TopicController extends BaseController {
 	public function getTopics($categoryId) {
 		//Authenticate
 		$category = Category::find($categoryId);
-		if($category == null) {
+		if($category === null) {
 			App::abort(404, "Could not find spesified category");
 		}
 
@@ -98,12 +98,12 @@ class TopicController extends BaseController {
 		}
 
 		$id = Input::get("id");
-		if($id == null) {
+		if($id === null) {
 			App::abort(400, "A topic must be selected");
 		}
 
 		$dbTopic = Topic::find($id);
-		if($dbTopic == null) {
+		if($dbTopic === null) {
 			App::abort(400, "No topic found on given attributes");
 		}
 
@@ -134,12 +134,12 @@ class TopicController extends BaseController {
 		$currentUser->guild_rank = Session::get("guildRank");
 
 		$topic = Topic::find($topicId);
-		if($topic == null) {
+		if($topic === null) {
 			App::abort(400, "No topic found");
 		}
 
 		//Not an officer
-		if($currentUser->guild_rank > 3 || $currentUserGuildRank == null) {
+		if($currentUser->guild_rank > 3 || $currentUserGuildRank === null) {
 			if($topic->user_id != $currentUser->id) {
 				App::abort(401, "You do not have permission to delete topic");
 			}
