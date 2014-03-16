@@ -33,26 +33,41 @@ class CategoryController extends BaseController {
 	//Read
 	public function getCategories() {
 		$currentGuildRank = Session::get('guildRank');
+		$categories;
+
 		//Returns public forums
 		if($currentGuildRank === null) {
-			return Category::where('guild_rank_required', '=', null)
+			$categories = Category::where('guild_rank_required', '=', null)
 							->orderBy('group_id')
 							->orderBy('title')
 							->get();	
 		} else {
 			//If current guild rank makes him an officer, return all
 			if($currentGuildRank <= 3) {
-				return Category::orderBy('group_id')
+				$categories = Category::orderBy('group_id')
 							->orderBy('title')
 							->get();
 			} else {
-				return Category::where('guild_rank_required', '=', null)
+				$categories = Category::where('guild_rank_required', '=', null)
 							->where('guild_rank_required', '>', 3, 'OR')
 							->orderBy('group_id')
 							->orderBy('title')
 							->get(); 	
 			}				
 		}
+
+		if(Auth::check()) {
+			//Loops through and finds the seen categories and updates return
+			foreach ($categories as $category) {
+				$seen = UserCategory::where('user_id', '=', Auth::user()->id)
+								->where('category_id', '=', $category->id)
+								->first();
+				if(!is_null($seen)) {
+					$category->seen = 1;
+				}
+			}
+		}
+		return $categories;
 	}
 
 	//Update

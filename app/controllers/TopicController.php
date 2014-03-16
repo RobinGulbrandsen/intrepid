@@ -66,10 +66,17 @@ class TopicController extends BaseController {
 		$category->last_post_name = $currentUser->username;
 		$category->last_post_time = date('Y-m-d H:i:s');
 		$category->update();
-		
-		//Save object
-		return json_encode($topic->save());
 
+		//Save object
+		$success = $topic->save();
+		if($success) {
+			//Adds topic to viewed topics
+			$userTopic = new UserTopic();
+			$userTopic->user_id = Auth::user()->id;
+			$userTopic->topic_id = $topic->id;
+			$userTopic->save();
+		}
+		return json_encode($success);
 	}
 
 	//Read all topics in a category
@@ -82,12 +89,37 @@ class TopicController extends BaseController {
 
 		$this->auth($category->guild_rank_required);
 
-		//Return content on authentication okey
-		return Topic::where('category_id', '=', $categoryId)
-					->orderBy('sticky', 'DESC')
-					->orderBy('updated_at', 'DESC')
-					->orderBy('id')
-					->get();
+		$topics = Topic::where('category_id', '=', $categoryId)
+						->orderBy('sticky', 'DESC')
+						->orderBy('updated_at', 'DESC')
+						->orderBy('id')
+						->get();
+
+		if(Auth::check()) {
+
+			//Category is now seen, adds row to db
+			$seen = UserCategory::where('category_id', '=', $categoryId)
+							->where('user_id', '=', Auth::user()->id)
+							->first();
+
+			if(is_null($seen)) {
+				$newUserCategory = new UserCategory();
+				$newUserCategory->user_id = Auth::user()->id;
+				$newUserCategory->category_id = $categoryId;
+				$newUserCategory->save();
+			}
+
+			//Loops through and updates current users views
+			foreach ($topics as $topic) {
+				$seen = UserTopic::where('user_id', '=', Auth::user()->id)
+								->where('topic_id', '=', $topic->id)
+								->first();
+				if(!is_null($seen)) {
+					$topic->seen = 1;
+				}
+			}
+		}
+		return $topics;
 	}
 
 	//Update given category

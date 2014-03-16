@@ -59,6 +59,17 @@ class PostController extends BaseController {
 		$category->last_post_time = date('Y-m-d H:i:s');
 		$category->update();
 
+		//Removes all listings in the users_topics table
+		$userTopic = UserTopic::where('topic_id', '=', $topicId)->get();
+		if(!is_null($userTopic)) {
+			UserTopic::where('topic_id', '=', $topicId)->delete();
+		}
+		
+		$userCategory = UserCategory::where('category_id', '=', $categoryId)->get();
+		if(!is_null($userCategory)) {
+			UserCategory::where('category_id', '=', $categoryId)->delete();
+		}
+
 		return json_encode(true);
 	}
 
@@ -67,9 +78,24 @@ class PostController extends BaseController {
 		//Authenticate
 		$this->auth($topicId);
 
-		return Topic::where('id', '=', $topicId)
+		$topics = Topic::where('id', '=', $topicId)
 					->with('author', 'posts.author')
 					->get();
+
+		if(Auth::check()) {
+
+			//user has now seen the topic, and a row gets added to the table if not exists
+			$seen = UserTopic::where('user_id', '=', Auth::user()->id)
+							->where('topic_id', '=', $topicId)
+							->first();
+			if(is_null($seen)) {
+				$users_topics = new UserTopic();
+				$users_topics->user_id = Auth::user()->id;
+				$users_topics->topic_id = $topicId;
+				$users_topics->save();
+			}
+		}
+		return $topics;
 	}
 
 	//Update
@@ -94,6 +120,18 @@ class PostController extends BaseController {
 		}
 
 		$post->content = Input::get("content");
+
+		//Removes all listings in the users_topics table
+		$userTopic = UserTopic::where('topic_id', '=', $topicId)->get();
+		if(!is_null($userTopic)) {
+			UserTopic::where('topic_id', '=', $topicId)->delete();
+		}
+		
+		$userCategory = UserCategory::where('category_id', '=', $categoryId)->get();
+		if(!is_null($userCategory)) {
+			UserCategory::where('category_id', '=', $categoryId)->delete();
+		}
+
 		return json_encode($post->update());
 	}
 

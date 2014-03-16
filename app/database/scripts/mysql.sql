@@ -88,3 +88,19 @@ CREATE TABLE articles (
 	updated_at 	date,
 	FOREIGN KEY (user_id)	REFERENCES users (id)
 );
+
+########################################
+# Table for recording users post views #
+########################################
+CREATE TABLE users_topics (
+	user_id 	int(8) NOT NULL,
+	topic_id 	int(8) NOT NULL
+);
+ALTER TABLE topics ADD COLUMN seen boolean DEFAULT 0;
+
+CREATE TABLE users_categories (
+	user_id 	int(8) NOT NULL,
+	category_id int(8) NOT NULL
+);
+ALTER TABLE categories ADD COLUMN seen boolean DEFAULT 0;
+
