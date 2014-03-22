@@ -104,3 +104,7 @@ CREATE TABLE users_categories (
 );
 ALTER TABLE categories ADD COLUMN seen boolean DEFAULT 0;
 
+###########################################
+# Updates length on title field for topic #
+###########################################
+ALTER TABLE topics MODIFY title VARCHAR(50);

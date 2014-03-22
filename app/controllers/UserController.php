@@ -54,7 +54,7 @@ class UserController extends BaseController {
 					'guildRank'	=> $guildRank
 			);
 		} else {
-			App::abort(401); //Unauthorized
+			App::abort(401, "Wrong username or password");
 		}
 	}
 

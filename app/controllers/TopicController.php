@@ -34,6 +34,19 @@ class TopicController extends BaseController {
 			App::abort(401, "You do not have permission to create topic under this category");
 		}
 
+		//Gets the last topic the user created and checks the time
+		$lastTopicByUser = Topic::where('user_id', '=', Auth::user()->id)
+									->orderBy('created_at', 'DESC')
+									->first();
+
+		if(!is_null($lastTopicByUser)) {
+			$currentTime = strtotime(date('Y-m-d H:i:s'));
+			$lastCreatedTime = strtotime($lastTopicByUser->created_at);
+
+			if($currentTime - $lastCreatedTime < 60) {
+				App::abort(400, "Can only create content once a min. Last " . ($currentTime - $lastCreatedTime) . "secounds ago.");
+			}
+		}
 
 		//Validate input
 		$title = 	Input::get("title");
