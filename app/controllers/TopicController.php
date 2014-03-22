@@ -184,7 +184,7 @@ class TopicController extends BaseController {
 		}
 
 		//Not an officer
-		if($currentUser->guild_rank > 3 || $currentUserGuildRank === null) {
+		if($currentUser->guild_rank > 3 || $currentUser->guild_rank === null) {
 			if($topic->user_id != $currentUser->id) {
 				App::abort(401, "You do not have permission to delete topic");
 			}
